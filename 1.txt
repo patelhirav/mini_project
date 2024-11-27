@@ -1,0 +1,44 @@
+-- Create the database
+CREATE DATABASE school_dashboard;
+
+-- Use the database
+USE school_dashboard;
+
+-- 1. Users Table (For Admin/Teacher Accounts)
+CREATE TABLE users (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    email VARCHAR(100) NOT NULL UNIQUE,
+    password VARCHAR(255) NOT NULL,
+    role ENUM('admin', 'teacher') DEFAULT 'teacher',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    deleted_at TIMESTAMP NULL DEFAULT NULL
+);
+
+-- 2. Students Table (For Adding Student Information)
+CREATE TABLE students (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    email VARCHAR(100) NOT NULL UNIQUE,
+    class VARCHAR(50) NOT NULL,
+    teacher_id INT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    deleted_at TIMESTAMP NULL DEFAULT NULL,
+    FOREIGN KEY (teacher_id) REFERENCES users(id)
+);
+
+-- 3. Homework Table (For Adding Homework Information)
+CREATE TABLE homework (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    title VARCHAR(255) NOT NULL,
+    class VARCHAR(50) NOT NULL,
+    topic VARCHAR(255) NOT NULL,
+    subject VARCHAR(100) NOT NULL,
+    teacher_id INT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    deleted_at TIMESTAMP NULL DEFAULT NULL,
+    FOREIGN KEY (teacher_id) REFERENCES users(id)
+);

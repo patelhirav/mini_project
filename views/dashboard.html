@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dashboard</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <style>
+      body {
+        font-family: "Arial", sans-serif;
+        background-color: #f0f2f5;
+      }
+
+      .sidebar {
+        height: 100vh;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 250px;
+        background-color: #253240;
+        padding-top: 20px;
+      }
+
+      .sidebar h4 {
+        color: white;
+        font-size: 1.5rem;
+        margin-bottom: 20px;
+        text-align: center;
+      }
+
+      .sidebar a {
+        text-decoration: none;
+        color: white;
+        padding: 10px 15px;
+        display: block;
+        margin: 10px 0;
+        font-weight: 500;
+        border-radius: 5px;
+        transition: background-color 0.3s ease;
+      }
+
+      .sidebar a:hover {
+        background-color: #a8b8c8;
+        color: black;
+      }
+
+      .content {
+        margin-left: 270px;
+        padding: 20px;
+      }
+
+      .card-header {
+        background-color: #0056b3;
+        color: white;
+        font-weight: bold;
+        padding: 20px;
+        font-size: 1.4rem;
+        text-align: center;
+      }
+
+      .card {
+        margin-top: 20px;
+        border: none;
+        border-radius: 10px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+      }
+
+      .btn-custom {
+        background-color: #a8b8c8;
+        color: rgb(8, 8, 8);
+        border: none;
+        border-radius: 5px;
+        transition: background-color 0.3s ease;
+      }
+
+      .btn-custom:hover {
+        background-color: #003a75;
+        color: white;
+      }
+
+      .table-striped tbody tr:nth-of-type(odd) {
+        background-color: #e9ecef;
+      }
+
+      .mb-4,
+      .mt-4 {
+        margin: 1.5rem 0 !important;
+      }
+
+      #addHomeworkForm {
+        display: none;
+      }
+
+      .float-right {
+        float: right;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-md-2 sidebar">
+          <h4>Dashboard</h4>
+          <ul class="nav flex-column">
+            <li class="nav-item">
+              <a href="#" class="nav-link" id="addStudentLink">Add Student</a>
+            </li>
+            <li class="nav-item">
+              <a href="#" class="nav-link" id="studentListLink">Student List</a>
+            </li>
+            <li class="nav-item">
+              <a href="#" class="nav-link" id="homeworkListLink"
+                >Homework List</a
+              >
+            </li>
+          </ul>
+        </div>
+
+        <div class="col-md-10 content">
+          <h1 class="text-center mb-4" id="welcomeMessage">Welcome</h1>
+
+          <div class="card mb-4" id="addStudentForm">
+            <div class="card-header">Add Student</div>
+            <div class="card-body">
+              <form id="studentForm">
+                <div class="mb-3">
+                  <label for="studentName" class="form-label"
+                    >Student Name</label
+                  >
+                  <input
+                    type="text"
+                    class="form-control name"
+                    id="name"
+                    placeholder="Enter student name"
+                    required
+                  />
+                </div>
+                <div class="mb-3">
+                  <label for="studentEmail" class="form-label">Email</label>
+                  <input
+                    type="email"
+                    class="form-control class"
+                    id="email"
+                    name="email"
+                    placeholder="Enter student email"
+                    required
+                  />
+                </div>
+                <div class="mb-3">
+                  <label for="studentClass" class="form-label">Class</label>
+                  <input
+                    type="text"
+                    class="form-control class"
+                    name="class"
+                    id="class"
+                    placeholder="Enter class"
+                    required
+                  />
+                </div>
+                <button type="submit" class="btn btn-custom">
+                  Add Student
+                </button>
+              </form>
+            </div>
+          </div>
+
+          <div class="card mb-4" id="studentList" style="display: none">
+            <div class="card-header">List of Students</div>
+            <div class="card-body">
+              <table class="table table-striped table-hover" id="studentTable">
+                <thead class="table-dark">
+                  <tr>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Class</th>
+                  </tr>
+                </thead>
+                <tbody></tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="card mb-4" id="homeworkList" style="display: none">
+            <div
+              class="card-header d-flex justify-content-between align-items-center"
+            >
+              Homework List
+              <button class="btn btn-custom float-right" id="addHomeworkButton">
+                Add Homework
+              </button>
+            </div>
+            <div class="card-body">
+              <table class="table table-striped table-hover" id="homeworkTable">
+                <thead class="table-light">
+                  <tr>
+                    <th>Title</th>
+                    <th>Class</th>
+                    <th>Topic</th>
+                    <th>Subject</th>
+                  </tr>
+                </thead>
+                <tbody></tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="card mt-4" id="addHomeworkForm">
+            <div class="card-header">Add Homework</div>
+            <div class="card-body">
+              <form id="homeworkForm">
+                <div class="mb-3">
+                  <label for="homeworkTitle" class="form-label"
+                    >Homework Title</label
+                  >
+                  <input
+                    type="text"
+                    class="form-control"
+                    id="homeworkTitle"
+                    placeholder="Enter homework title"
+                    required
+                  />
+                </div>
+                <div class="mb-3">
+                  <label for="homeworkClass" class="form-label">Class</label>
+                  <input
+                    type="text"
+                    class="form-control"
+                    id="homeworkClass"
+                    placeholder="Enter class"
+                    required
+                  />
+                </div>
+                <div class="mb-3">
+                  <label for="homeworkTopic" class="form-label">Topic</label>
+                  <input
+                    type="text"
+                    class="form-control"
+                    id="homeworkTopic"
+                    placeholder="Enter topic"
+                    required
+                  />
+                </div>
+                <div class="mb-3">
+                  <label for="homeworkSubject" class="form-label"
+                    >Subject</label
+                  >
+                  <input
+                    type="text"
+                    class="form-control"
+                    id="homeworkSubject"
+                    placeholder="Enter subject"
+                    required
+                  />
+                </div>
+                <button type="submit" class="btn btn-custom">
+                  Add Homework
+                </button>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.min.js"></script>
+
+    <script src="/public/script/dashboard.js"></script>
+  </body>
+</html>
