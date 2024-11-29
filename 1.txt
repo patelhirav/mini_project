@@ -1,248 +1,222 @@
-// document.getElementById('addStudentForm').addEventListener('submit', async (e) => {
-//   e.preventDefault();
+const db = require('../db/db');
+const jwt = require('jsonwebtoken');
+const bcrypt = require('bcrypt');
 
-//   const token = localStorage.getItem('token');
-//   console.log('Token from local: ', token);
-//   if (!token) {
-//     alert('You must be logged in to access this page');
-//     return;
-//   }
+module.exports = {
+  async studentLogin(req, res) {
+    const { email, password } = req.body;
 
-//   const name = document.getElementById('name').value;
-//   const email = document.getElementById('email').value;
-//   const studentClass = document.getElementById('class').value;
+    if (!email || !password) {
+      return res.status(400).json({ message: 'Email and password are required.' });
+    }
 
-//   try {
-//     const response = await fetch('/api/addStudent', {
-//       method: 'POST',
-//       headers: {
-//         'Authorization': `Bearer ${token}`,
-//         'Content-Type': 'application/json'
-//       },
-//       body: JSON.stringify({ name, email, class: studentClass })
-//     });
-//     // console.log(response);
+    try {
+      const query = 'SELECT * FROM students WHERE email = ?';
+      db.query(query, [email], async (err, results) => {
+        if (err) {
+          console.error('Error fetching student:', err);
+          return res.status(500).json({ message: 'An error occurred during login.' });
+        }
 
-//     const result = await response.json();
+        if (results.length === 0) {
+          return res.status(404).json({ message: 'Student not found.' });
+        }
 
-//     if (!response.ok) {
-//       alert(result.message || 'Failed to add student.');
-//       return;
-//     }
+        const student = results[0];
 
-//     alert('Student added successfully!');
-//     document.getElementById('studentForm').reset();
+        // Compare passwords
+        const isPasswordValid = await bcrypt.compare(password, student.password);
+        if (!isPasswordValid) {
+          return res.status(401).json({ message: 'Invalid email or password.' });
+        }
 
-//   } catch (error) {
-//     alert('An error occurred. Please try again later.');
-//     console.error(error);
-//   }
-// });
+        // Generate JWT token
+        const token = jwt.sign(
+          { studentId: student.id, class: student.class },
+          process.env.JWT_SECRET,
+          { expiresIn: '1h' }
+        );
 
-
-// document.getElementById('addHomeworkForm').addEventListener('submit', async (e) => {
-//   e.preventDefault();
-
-//   const token = localStorage.getItem('token');
-//   if (!token) {
-//     alert('You must be logged in to add homework.');
-//     return;
-//   }
-
-//   const title = document.getElementById('title').value;
-//   const homeworkClass = document.getElementById('class').value;
-//   const topic = document.getElementById('topic').value;
-//   const subject = document.getElementById('subject').value;
-
-//   try {
-//     const response = await fetch('/api/addHomework', {
-//       method: 'POST',
-//       headers: {
-//         'Authorization': `Bearer ${token}`,
-//         'Content-Type': 'application/json', 
-//       },
-//       body: JSON.stringify({ title, class: homeworkClass, topic, subject }),
-//     });
-
-//     const result = await response.json();
-
-//     if (!response.ok) {
-//       alert(result.message || 'Failed to add homework.');
-//       return;
-//     }
-
-//     alert('Homework added successfully!');
-//     document.getElementById('addHomeworkForm').reset();
-//     loadHomework();
-//   } catch (error) {
-//     alert('An error occurred. Please try again later.');
-//     console.error(error);
-//   }
-// });
+        res.status(200).json({ message: 'Login successful', token });
+      });
+    } catch (error) {
+      console.error('Error during student login:', error);
+      res.status(500).json({ message: 'An error occurred during login.' });
+    }
+  },
+};
 
 
 
-// window.addEventListener('load', async () => {
-//   const token = localStorage.getItem('token');
-//   if (!token) {
-//     alert('You must log in to view this page.');
-//     window.location.href = '/';
-//     return;
-//   }
-
-//   try {
-//     const response = await fetch('/api/students', {
-//       method: 'GET',
-//       headers: { 'Authorization': `Bearer ${token}` },
-//     });
-
-//     if (!response.ok) {
-//       alert('Failed to fetch student data.');
-//       return;
-//     }
-
-//     const students = await response.json();
-//     const tableBody = document.getElementById('studentTableBody');
-//     tableBody.innerHTML = '';
-
-//     students.forEach((student) => {
-//       const row = document.createElement('tr');
-//       row.innerHTML = `
-//         <td>${student.name}</td>
-//         <td>${student.email}</td>
-//         <td>${student.class}</td>
-//       `;
-//       tableBody.appendChild(row);
-//     });
-//   } catch (error) {
-//     console.error('Error fetching students:', error);
-//     alert('An error occurred.');
-//   }
-// });
-
-// document.addEventListener("DOMContentLoaded", () => {
-//   const addStudentLink = document.getElementById("addStudentLink");
-//   const studentListLink = document.getElementById("studentListLink");
-//   const homeworkListLink = document.getElementById("homeworkListLink");
-
-//   const addStudentForm = document.getElementById("addStudentForm");
-//   const studentList = document.getElementById("studentList");
-//   const homeworkList = document.getElementById("homeworkList");
-
-//   const addStudentHeading = document.getElementById("addStudentHeading");
-
-//   function showSection(section) {
-//     [addStudentForm, studentList, homeworkList].forEach((s) => {
-//       s.style.display = "none";
-//     });
-//     section.style.display = "block";
-
-//     if (section === addStudentForm) {
-//       addStudentHeading.style.display = "block";
-//     } else {
-//       addStudentHeading.style.display = "none";
-//     }
-//   }
-
-//   addStudentLink.addEventListener("click", (e) => {
-//     e.preventDefault();
-//     showSection(addStudentForm);
-//   });
-
-//   studentListLink.addEventListener("click", (e) => {
-//     e.preventDefault();
-//     showSection(studentList);
-//   });
-
-//   homeworkListLink.addEventListener("click", (e) => {
-//     e.preventDefault();
-//     showSection(homeworkList);
-//   });
-// });
-
-// // document.addEventListener("DOMContentLoaded", () => {
-// //   const addHomeworkButton = document.getElementById("addHomeworkButton");
-// //   const addHomeworkForm = document.getElementById("addHomeworkForm");
-// //   const homeworkList = document.getElementById("homeworkList");
-// //   const studentList = document.getElementById("studentList");
-// //   const addStudentForm = document.getElementById("addStudentForm");
-
-// //   function showSection(section) {
-// //     [homeworkList, studentList, addStudentForm].forEach((s) => {
-// //       s.style.display = "none";
-// //     });
-// //     section.style.display = "block";
-// //   }
-
-// //   addHomeworkButton.addEventListener("click", () => {
-// //     addHomeworkForm.style.display = addHomeworkForm.style.display === "none" ? "block" : "none";
-// //   });
-
-// //   document.getElementById("homeworkListLink").addEventListener("click", (e) => {
-// //     e.preventDefault();
-// //     showSection(homeworkList);
-// //     addHomeworkForm.style.display = "none";
-// //   });
-
-// //   document.getElementById("studentListLink").addEventListener("click", (e) => {
-// //     e.preventDefault();
-// //     showSection(studentList);
-// //   });
-
-// //   document.getElementById("addStudentLink").addEventListener("click", (e) => {
-// //     e.preventDefault();
-// //     showSection(addStudentForm);
-// //   });
-// // });
-
-// addHomeworkButton.addEventListener("click", () => {
-//   addHomeworkForm.style.display = addHomeworkForm.style.display === "none" ? "block" : "none";
-// });
-
-// homeworkForm.addEventListener("submit", (e) => {
-//   e.preventDefault();
-
-//   const title = document.getElementById("homeworkTitle").value;
-//   const homeworkClass = document.getElementById("homeworkClass").value;
-//   const topic = document.getElementById("homeworkTopic").value;
-//   const subject = document.getElementById("homeworkSubject").value;
-
-//   const row = document.createElement("tr");
-//   row.innerHTML = `
-//       <td>${title}</td>
-//       <td>${homeworkClass}</td>
-//       <td>${topic}</td>
-//       <td>${subject}</td>
-//     `;
-//   homeworkTable.appendChild(row);
-
-//   homeworkForm.reset();
-//   addHomeworkForm.style.display = "none";
-// });
 
 
 
-addHomeworkButton.addEventListener("click", () => {
-  addHomeworkForm.style.display = addHomeworkForm.style.display === "none" ? "block" : "none";
-});
 
-homeworkForm.addEventListener("submit", (e) => {
+
+
+
+module.exports = {
+  async getStudentHomework(req, res) {
+    const studentClass = req.user.class;
+
+    if (!studentClass) {
+      return res.status(400).json({ message: 'Student class is required.' });
+    }
+
+    const query = 'SELECT title, topic, subject FROM homework WHERE class = ?';
+    db.query(query, [studentClass], (err, results) => {
+      if (err) {
+        console.error('Error fetching homework:', err);
+        return res.status(500).json({ message: 'Failed to fetch homework.' });
+      }
+      res.status(200).json(results);
+    });
+  },
+};
+
+
+
+
+
+
+
+
+
+
+
+
+
+const jwt = require('jsonwebtoken');
+
+module.exports = {
+  authenticateStudent(req, res, next) {
+    const token = req.headers.authorization?.split(' ')[1];
+    if (!token) {
+      return res.status(401).json({ message: 'Access denied. No token provided.' });
+    }
+
+    try {
+      const decoded = jwt.verify(token, process.env.JWT_SECRET);
+      req.user = decoded;
+      next();
+    } catch (error) {
+      res.status(403).json({ message: 'Invalid or expired token.' });
+    }
+  },
+};
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<form id="studentLoginForm">
+  <input type="email" id="studentEmail" placeholder="Email" required />
+  <input type="password" id="studentPassword" placeholder="Password" required />
+  <button type="submit">Login</button>
+</form>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+document.getElementById('studentLoginForm').addEventListener('submit', async (e) => {
   e.preventDefault();
 
-  const title = document.getElementById("homeworkTitle").value;
-  const homeworkClass = document.getElementById("homeworkClass").value;
-  const topic = document.getElementById("homeworkTopic").value;
-  const subject = document.getElementById("homeworkSubject").value;
+  const email = document.getElementById('studentEmail').value.trim();
+  const password = document.getElementById('studentPassword').value.trim();
 
-  const row = document.createElement("tr");
-  row.innerHTML = `
-      <td>${title}</td>
-      <td>${homeworkClass}</td>
-      <td>${topic}</td>
-      <td>${subject}</td>
-    `;
-  homeworkTable.appendChild(row);
+  try {
+    const response = await fetch('/api/student/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password }),
+    });
 
-  homeworkForm.reset();
-  addHomeworkForm.style.display = "none";
+    const result = await response.json();
+    if (!response.ok) {
+      alert(result.message || 'Failed to log in.');
+      return;
+    }
+
+    // Save token and redirect to homework page
+    localStorage.setItem('studentToken', result.token);
+    alert('Login successful!');
+    window.location.href = '/student-dashboard.html';
+  } catch (error) {
+    console.error('Error logging in:', error);
+    alert('An error occurred. Please try again.');
+  }
 });
+
+
+
+
+
+
+
+
+
+
+
+
+
+document.addEventListener('DOMContentLoaded', async () => {
+  const token = localStorage.getItem('studentToken');
+  if (!token) {
+    alert('You must log in to view your homework.');
+    window.location.href = '/student-login.html';
+    return;
+  }
+
+  try {
+    const response = await fetch('/api/student/homework', {
+      method: 'GET',
+      headers: { Authorization: `Bearer ${token}` },
+    });
+
+    if (!response.ok) {
+      alert('Failed to fetch homework.');
+      return;
+    }
+
+    const homework = await response.json();
+    const tableBody = document.getElementById('studentHomeworkBody');
+    tableBody.innerHTML = '';
+
+    homework.forEach((item) => {
+      const row = `<tr><td>${item.title}</td><td>${item.topic}</td><td>${item.subject}</td></tr>`;
+      tableBody.innerHTML += row;
+    });
+  } catch (error) {
+    console.error('Error fetching homework:', error);
+    alert('An error occurred. Please try again.');
+  }
+});
+
+
+
+
+
+
+
+
+

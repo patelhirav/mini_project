@@ -70,7 +70,7 @@ body {
   .input-box input:focus ~ label,
   .input-box input:valid ~ label {
     top: -5px;
-    color: #2691d9;
+    color: #000000;
   }
 
   .input-box input:focus ~ span::before,

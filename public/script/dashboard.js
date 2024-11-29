@@ -5,6 +5,8 @@ document.addEventListener("DOMContentLoaded", () => {
   const studentHomeworkLink = document.getElementById(
     "studentHomeworkLink"
   );
+  const welcomeMessageDiv = document.getElementById('welcomeMessage');
+
   const addHomeworkButton = document.getElementById("addHomeworkButton");
 
   const welcomeMessage = document.getElementById("welcomeMessage");
@@ -55,9 +57,10 @@ document.addEventListener("DOMContentLoaded", () => {
     e.preventDefault();
     const name = document.getElementById("name").value;
     const email = document.getElementById("email").value;
+    const password = document.getElementById("password").value;
     const studentClass = document.getElementById("class").value;
 
-    const row = `<tr><td>${name}</td><td>${email}</td><td>${studentClass}</td></tr>`;
+    const row = `<tr><td>${name}</td><td>${email}</td><td>${password}</td><td>${studentClass}</td></tr>`;
     document.getElementById("studentTableBody").innerHTML += row;
 
     e.target.reset();
@@ -73,62 +76,93 @@ document.addEventListener("DOMContentLoaded", () => {
     const row = `<tr><td>${title}</td><td>${topic}</td><td>${subject}</td></tr>`;
     document.getElementById("homeworkTableBody").innerHTML += row;
 
-    e.target.reset();
+    // e.target.reset();
     toggleView(homeworkList);
   }
+
+  const token = localStorage.getItem('token');
+  if (token) {
+    const user = JSON.parse(atob(token.split('.')[1]));
+    const userName = user.name || 'User';
+
+    welcomeMessageDiv.innerText = `Welcome, ${userName}!`;
+  } else {
+    welcomeMessageDiv.innerText = 'Welcome!';
+  }
+
 });
 
 
+// ADD STUDENT 
 window.addEventListener('load', async () => {
-
   document.getElementById('addStudentForm').addEventListener('submit', async (e) => {
     e.preventDefault();
 
     const name = document.getElementById('studentName').value.trim();
     const email = document.getElementById('studentEmail').value.trim();
+    const password = document.getElementById('studentPass').value.trim();
     const studentClass = document.getElementById('studentClass').value.trim();
 
-    console.log('Form Values:', { name, email, studentClass });
+    console.log('Form Values:', { name, email, password, studentClass });
 
-    if (!name || !email || !studentClass) {
+    if (!name || !email || !password || !studentClass) {
       alert('All fields are required');
       return;
     }
 
-    const token = localStorage.getItem('token');
-    const response = await fetch('/api/addStudent', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${token}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ name, email, class: studentClass }),
-    });
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch('/api/addStudent', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ name, email, password, class: studentClass }),
+      });
 
-    const result = await response.json();
+      const result = await response.json();
 
-    if (!response.ok) {
-      alert(result.message || 'Failed to add student.');
-      return;
+      if (!response.ok) {
+        alert(result.message || 'Failed to add student.');
+        return;
+      }
+
+      alert('Student added successfully');
+      document.getElementById('addStudentForm').reset();
+    } catch (error) {
+      // console.error('Error adding student:', error);
+      // alert('An error occurred.');
     }
-
-    alert('Student added successfully');
-    document.getElementById('addStudentForm').reset();
   });
 
+
+
+  // HOMEWORK
+  document.getElementById('homeworkTitle')
   document.getElementById('homeworkForm').addEventListener('submit', async (e) => {
     e.preventDefault();
+    console.log('subbmited');
 
     const token = localStorage.getItem('token');
     if (!token) {
       alert('You must be logged in to add homework.');
       return;
     }
+    console.log(document.getElementById('homeworkTitle'));
 
     const title = document.getElementById('homeworkTitle').value.trim();
+    console.log(title);
+
     const homeworkClass = document.getElementById('homeworkClass').value.trim();
+    console.log(homeworkClass);
+
     const topic = document.getElementById('homeworkTopic').value.trim();
+    console.log(topic);
+
     const subject = document.getElementById('homeworkSubject').value.trim();
+    console.log(subject);
+
 
     if (!title || !homeworkClass || !topic || !subject) {
       alert('All fields are required.');
@@ -195,6 +229,7 @@ window.addEventListener('load', async () => {
         row.innerHTML = `
           <td>${student.name}</td>
           <td>${student.email}</td>
+          <td>${student.password}</td>
           <td>${student.class}</td>
         `;
         tableBody.appendChild(row);
@@ -236,7 +271,18 @@ window.addEventListener('load', async () => {
       alert('An error occurred while fetching homework data.');
     }
   }
-
   await loadStudents();
   await loadHomework();
+});
+
+
+document.addEventListener('DOMContentLoaded', () => {
+  const logoutButton = document.getElementById('logoutButton');
+
+  logoutButton.addEventListener('click', () => {
+    localStorage.removeItem('token');
+
+    alert('You have been logged out.');
+    window.location.href = '/';
+  });
 });
