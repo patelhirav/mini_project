@@ -3,6 +3,8 @@ const bodyParser = require('body-parser');
 const path = require('path');
 const authRoutes = require('./routes/authRoutes');
 const studentRoutes = require('./routes/studentRoutes');
+const homeworkRoutes = require('./routes/homeworkRoutes');
+const { verifyToken } = require('./middleware/authMiddleware');
 const app = express();
 
 app.use(bodyParser.json());
@@ -19,11 +21,12 @@ app.get('/signup', (req, res) => {
 });
 
 app.get('/dashboard', (req, res) => {
-    res.sendFile(path.join(__dirname, 'views/dashboard.html'));
+    res.sendFile(path.join(__dirname,'views/dashboard.html'));
 });
 
 app.use('/api', authRoutes);
 app.use('/api', studentRoutes);
+app.use('/api', homeworkRoutes);
 
 app.listen(3000, () => {
     console.log(`Server is running on http://localhost:3000`);

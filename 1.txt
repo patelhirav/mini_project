@@ -1,44 +1,248 @@
--- Create the database
-CREATE DATABASE school_dashboard;
+// document.getElementById('addStudentForm').addEventListener('submit', async (e) => {
+//   e.preventDefault();
 
--- Use the database
-USE school_dashboard;
+//   const token = localStorage.getItem('token');
+//   console.log('Token from local: ', token);
+//   if (!token) {
+//     alert('You must be logged in to access this page');
+//     return;
+//   }
 
--- 1. Users Table (For Admin/Teacher Accounts)
-CREATE TABLE users (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    name VARCHAR(100) NOT NULL,
-    email VARCHAR(100) NOT NULL UNIQUE,
-    password VARCHAR(255) NOT NULL,
-    role ENUM('admin', 'teacher') DEFAULT 'teacher',
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    deleted_at TIMESTAMP NULL DEFAULT NULL
-);
+//   const name = document.getElementById('name').value;
+//   const email = document.getElementById('email').value;
+//   const studentClass = document.getElementById('class').value;
 
--- 2. Students Table (For Adding Student Information)
-CREATE TABLE students (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    name VARCHAR(100) NOT NULL,
-    email VARCHAR(100) NOT NULL UNIQUE,
-    class VARCHAR(50) NOT NULL,
-    teacher_id INT NOT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    deleted_at TIMESTAMP NULL DEFAULT NULL,
-    FOREIGN KEY (teacher_id) REFERENCES users(id)
-);
+//   try {
+//     const response = await fetch('/api/addStudent', {
+//       method: 'POST',
+//       headers: {
+//         'Authorization': `Bearer ${token}`,
+//         'Content-Type': 'application/json'
+//       },
+//       body: JSON.stringify({ name, email, class: studentClass })
+//     });
+//     // console.log(response);
 
--- 3. Homework Table (For Adding Homework Information)
-CREATE TABLE homework (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    title VARCHAR(255) NOT NULL,
-    class VARCHAR(50) NOT NULL,
-    topic VARCHAR(255) NOT NULL,
-    subject VARCHAR(100) NOT NULL,
-    teacher_id INT NOT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    deleted_at TIMESTAMP NULL DEFAULT NULL,
-    FOREIGN KEY (teacher_id) REFERENCES users(id)
-);
+//     const result = await response.json();
+
+//     if (!response.ok) {
+//       alert(result.message || 'Failed to add student.');
+//       return;
+//     }
+
+//     alert('Student added successfully!');
+//     document.getElementById('studentForm').reset();
+
+//   } catch (error) {
+//     alert('An error occurred. Please try again later.');
+//     console.error(error);
+//   }
+// });
+
+
+// document.getElementById('addHomeworkForm').addEventListener('submit', async (e) => {
+//   e.preventDefault();
+
+//   const token = localStorage.getItem('token');
+//   if (!token) {
+//     alert('You must be logged in to add homework.');
+//     return;
+//   }
+
+//   const title = document.getElementById('title').value;
+//   const homeworkClass = document.getElementById('class').value;
+//   const topic = document.getElementById('topic').value;
+//   const subject = document.getElementById('subject').value;
+
+//   try {
+//     const response = await fetch('/api/addHomework', {
+//       method: 'POST',
+//       headers: {
+//         'Authorization': `Bearer ${token}`,
+//         'Content-Type': 'application/json', 
+//       },
+//       body: JSON.stringify({ title, class: homeworkClass, topic, subject }),
+//     });
+
+//     const result = await response.json();
+
+//     if (!response.ok) {
+//       alert(result.message || 'Failed to add homework.');
+//       return;
+//     }
+
+//     alert('Homework added successfully!');
+//     document.getElementById('addHomeworkForm').reset();
+//     loadHomework();
+//   } catch (error) {
+//     alert('An error occurred. Please try again later.');
+//     console.error(error);
+//   }
+// });
+
+
+
+// window.addEventListener('load', async () => {
+//   const token = localStorage.getItem('token');
+//   if (!token) {
+//     alert('You must log in to view this page.');
+//     window.location.href = '/';
+//     return;
+//   }
+
+//   try {
+//     const response = await fetch('/api/students', {
+//       method: 'GET',
+//       headers: { 'Authorization': `Bearer ${token}` },
+//     });
+
+//     if (!response.ok) {
+//       alert('Failed to fetch student data.');
+//       return;
+//     }
+
+//     const students = await response.json();
+//     const tableBody = document.getElementById('studentTableBody');
+//     tableBody.innerHTML = '';
+
+//     students.forEach((student) => {
+//       const row = document.createElement('tr');
+//       row.innerHTML = `
+//         <td>${student.name}</td>
+//         <td>${student.email}</td>
+//         <td>${student.class}</td>
+//       `;
+//       tableBody.appendChild(row);
+//     });
+//   } catch (error) {
+//     console.error('Error fetching students:', error);
+//     alert('An error occurred.');
+//   }
+// });
+
+// document.addEventListener("DOMContentLoaded", () => {
+//   const addStudentLink = document.getElementById("addStudentLink");
+//   const studentListLink = document.getElementById("studentListLink");
+//   const homeworkListLink = document.getElementById("homeworkListLink");
+
+//   const addStudentForm = document.getElementById("addStudentForm");
+//   const studentList = document.getElementById("studentList");
+//   const homeworkList = document.getElementById("homeworkList");
+
+//   const addStudentHeading = document.getElementById("addStudentHeading");
+
+//   function showSection(section) {
+//     [addStudentForm, studentList, homeworkList].forEach((s) => {
+//       s.style.display = "none";
+//     });
+//     section.style.display = "block";
+
+//     if (section === addStudentForm) {
+//       addStudentHeading.style.display = "block";
+//     } else {
+//       addStudentHeading.style.display = "none";
+//     }
+//   }
+
+//   addStudentLink.addEventListener("click", (e) => {
+//     e.preventDefault();
+//     showSection(addStudentForm);
+//   });
+
+//   studentListLink.addEventListener("click", (e) => {
+//     e.preventDefault();
+//     showSection(studentList);
+//   });
+
+//   homeworkListLink.addEventListener("click", (e) => {
+//     e.preventDefault();
+//     showSection(homeworkList);
+//   });
+// });
+
+// // document.addEventListener("DOMContentLoaded", () => {
+// //   const addHomeworkButton = document.getElementById("addHomeworkButton");
+// //   const addHomeworkForm = document.getElementById("addHomeworkForm");
+// //   const homeworkList = document.getElementById("homeworkList");
+// //   const studentList = document.getElementById("studentList");
+// //   const addStudentForm = document.getElementById("addStudentForm");
+
+// //   function showSection(section) {
+// //     [homeworkList, studentList, addStudentForm].forEach((s) => {
+// //       s.style.display = "none";
+// //     });
+// //     section.style.display = "block";
+// //   }
+
+// //   addHomeworkButton.addEventListener("click", () => {
+// //     addHomeworkForm.style.display = addHomeworkForm.style.display === "none" ? "block" : "none";
+// //   });
+
+// //   document.getElementById("homeworkListLink").addEventListener("click", (e) => {
+// //     e.preventDefault();
+// //     showSection(homeworkList);
+// //     addHomeworkForm.style.display = "none";
+// //   });
+
+// //   document.getElementById("studentListLink").addEventListener("click", (e) => {
+// //     e.preventDefault();
+// //     showSection(studentList);
+// //   });
+
+// //   document.getElementById("addStudentLink").addEventListener("click", (e) => {
+// //     e.preventDefault();
+// //     showSection(addStudentForm);
+// //   });
+// // });
+
+// addHomeworkButton.addEventListener("click", () => {
+//   addHomeworkForm.style.display = addHomeworkForm.style.display === "none" ? "block" : "none";
+// });
+
+// homeworkForm.addEventListener("submit", (e) => {
+//   e.preventDefault();
+
+//   const title = document.getElementById("homeworkTitle").value;
+//   const homeworkClass = document.getElementById("homeworkClass").value;
+//   const topic = document.getElementById("homeworkTopic").value;
+//   const subject = document.getElementById("homeworkSubject").value;
+
+//   const row = document.createElement("tr");
+//   row.innerHTML = `
+//       <td>${title}</td>
+//       <td>${homeworkClass}</td>
+//       <td>${topic}</td>
+//       <td>${subject}</td>
+//     `;
+//   homeworkTable.appendChild(row);
+
+//   homeworkForm.reset();
+//   addHomeworkForm.style.display = "none";
+// });
+
+
+
+addHomeworkButton.addEventListener("click", () => {
+  addHomeworkForm.style.display = addHomeworkForm.style.display === "none" ? "block" : "none";
+});
+
+homeworkForm.addEventListener("submit", (e) => {
+  e.preventDefault();
+
+  const title = document.getElementById("homeworkTitle").value;
+  const homeworkClass = document.getElementById("homeworkClass").value;
+  const topic = document.getElementById("homeworkTopic").value;
+  const subject = document.getElementById("homeworkSubject").value;
+
+  const row = document.createElement("tr");
+  row.innerHTML = `
+      <td>${title}</td>
+      <td>${homeworkClass}</td>
+      <td>${topic}</td>
+      <td>${subject}</td>
+    `;
+  homeworkTable.appendChild(row);
+
+  homeworkForm.reset();
+  addHomeworkForm.style.display = "none";
+});

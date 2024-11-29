@@ -42,30 +42,28 @@ exports.signup = async (req, res) => {
         return res.status(500).json({ message: 'Server error' });
     }
 };
-exports.login = async (req, res) => {
+exports.login = (req, res) => {
     const { email, password } = req.body;
 
-    const query = 'SELECT * FROM users WHERE email = ?';
+    if (!email || !password) {
+        return res.status(400).json({ message: 'Email and password are required.' });
+    }
 
-    db.query(query, [email], async (err, results) => {
+    const sql = 'SELECT * FROM users WHERE email = ?';
+    db.query(sql, [email], async (err, results) => {
         if (err) {
-            return res.status(500).json({ message: 'Database error' });
+            console.error('Database error:', err);
+            return res.status(500).json({ message: 'Server error.' });
         }
 
         if (results.length === 0) {
-            return res.status(404).json({ message: 'User not found' });
+            return res.status(401).json({ message: 'Invalid credentials.' });
         }
 
         const user = results[0];
+        const token = jwt.sign({ userId: user.id, name: user.name }, SECRET_KEY, { expiresIn: '1h' });
+        console.log(token);
 
-        const isMatch = await bcrypt.compare(password, user.password);
-
-        if (!isMatch) {
-            return res.status(400).json({ message: 'Invalid credentials' });
-        }
-
-        const token = jwt.sign({ userId: user.id }, 'your_jwt_secret_key', { expiresIn: '1h' });
-
-        return res.status(200).json({ token });
+        res.status(200).json({ token, name: user.name });
     });
 };
