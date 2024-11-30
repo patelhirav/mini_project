@@ -7,6 +7,10 @@ const homeworkRoutes = require('./routes/homeworkRoutes');
 const { verifyToken } = require('./middleware/authMiddleware');
 const app = express();
 
+
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use('/public', express.static(path.join(__dirname, 'public')));

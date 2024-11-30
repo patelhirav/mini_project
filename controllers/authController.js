@@ -45,7 +45,7 @@ exports.signup = async (req, res) => {
 exports.login = (req, res) => {
     const { email, password } = req.body;
 
-    console.log(req.body);
+    console.log('Login ID: ',req.body);
     if (!email || !password) {
         return res.status(400).json({ message: 'Email and password are required.' });
     }
@@ -63,7 +63,6 @@ exports.login = (req, res) => {
 
         const user = results[0];
         const token = jwt.sign({ userId: user.id, name: user.name }, SECRET_KEY, { expiresIn: '1h' });
-
         console.log(token);
         res.status(200).json({ token, name: user.name });
     });

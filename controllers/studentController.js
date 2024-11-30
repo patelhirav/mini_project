@@ -5,7 +5,7 @@ module.exports = {
         const { name, email, password, class: studentClass } = req.body;
         const userId = req.user?.userId;
 
-        console.log('Request Body:', req.body);
+        console.log('Add Student Body:', req.body);
         console.log('User ID:', userId);
 
         if (!userId) {
@@ -15,7 +15,7 @@ module.exports = {
         if (!name || !email || !password || !studentClass) {
             return res.status(400).json({ message: 'All fields (name, email, password, class) are required' });
         }
-
+        
         const query = 'INSERT INTO students (name, email, password, class, user_id) VALUES (?, ?, ?, ?, ?)';
         db.query(query, [name, email, password, studentClass, userId], (err, results) => {
             if (err) {
@@ -23,7 +23,7 @@ module.exports = {
                 return res.status(500).json({ message: 'Failed to add student' });
             }
 
-            res.status(201).json({ message: 'Student added successfully' });
+            res.status(200).json({ message: 'Student added successfully' });
         });
     },
 
@@ -46,7 +46,7 @@ module.exports = {
 
     async studentLogin(req, res) {
         const { email, password } = req.body;
-        console.log(req.body);
+        console.log('Student Login: ',req.body);
 
         if (!email || !password) {
             return res.status(400).json({ message: 'Email and password required' });

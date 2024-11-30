@@ -5,7 +5,7 @@ module.exports = {
         const { title, class: homeworkClass, topic, subject } = req.body;
         const userId = req.user?.userId;
 
-        console.log('Request Body:', req.body);
+        console.log('Add Homwork Body:', req.body);
         console.log('User ID:', userId);
 
         if (!title || !homeworkClass || !topic || !subject) {
