@@ -34,6 +34,7 @@ module.exports = {
         }
 
         const query = 'SELECT title, class, topic, subject FROM homework WHERE user_id = ?';
+        // console.log(query);
 
         db.query(query, [userId], (err, result) => {
             if (err) {

@@ -5,11 +5,9 @@ document.addEventListener("DOMContentLoaded", () => {
   const studentHomeworkLink = document.getElementById(
     "studentHomeworkLink"
   );
-  const welcomeMessageDiv = document.getElementById('welcomeMessage');
 
   const addHomeworkButton = document.getElementById("addHomeworkButton");
 
-  const welcomeMessage = document.getElementById("welcomeMessage");
   const addStudentForm = document.getElementById("addStudentForm");
   const studentList = document.getElementById("studentList");
   const homeworkList = document.getElementById("homeworkList");
@@ -43,7 +41,6 @@ document.addEventListener("DOMContentLoaded", () => {
     .addEventListener("submit", addHomework);
 
   function toggleView(showElement) {
-    welcomeMessage.style.display = "none";
     addStudentForm.style.display = "none";
     studentList.style.display = "none";
     homeworkList.style.display = "none";
@@ -79,17 +76,6 @@ document.addEventListener("DOMContentLoaded", () => {
     // e.target.reset();
     toggleView(homeworkList);
   }
-
-  const token = localStorage.getItem('token');
-  if (token) {
-    const user = JSON.parse(atob(token.split('.')[1]));
-    const userName = user.name || 'User';
-
-    welcomeMessageDiv.innerText = `Welcome, ${userName}!`;
-  } else {
-    welcomeMessageDiv.innerText = 'Welcome!';
-  }
-
 });
 
 

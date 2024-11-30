@@ -8,6 +8,7 @@ const { verifyToken } = require('./middleware/authMiddleware');
 const app = express();
 
 app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
 app.use('/public', express.static(path.join(__dirname, 'public')));
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
@@ -21,7 +22,7 @@ app.get('/signup', (req, res) => {
 });
 
 app.get('/dashboard', (req, res) => {
-    res.sendFile(path.join(__dirname,'views/dashboard.html'));
+    res.sendFile(path.join(__dirname, 'views/dashboard.html'));
 });
 
 app.use('/api', authRoutes);
